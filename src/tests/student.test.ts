@@ -85,7 +85,7 @@ describe("Student API", () => {
     });
   });
 
-  describe("PUT /api/v1/students/:id", () => {
+  describe("PATCH /api/v1/students/:id", () => {
     it("should update a student", async () => {
       // First create a student
       const student = {
@@ -106,7 +106,7 @@ describe("Student API", () => {
       };
 
       const response = await request(app)
-        .put(`/api/v1/students/${id}`)
+        .patch(`/api/v1/students/${id}`)
         .send(updateData);
 
       expect(response.status).toBe(200);

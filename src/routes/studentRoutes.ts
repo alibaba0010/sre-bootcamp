@@ -12,7 +12,7 @@ router.get("/health", (req, res) => {
 router.post("/students", StudentController.createStudent);
 router.get("/students", StudentController.getAllStudents);
 router.get("/students/:id", StudentController.getStudentById);
-router.put("/students/:id", StudentController.updateStudent);
+router.patch("/students/:id", StudentController.updateStudent);
 router.delete("/students/:id", StudentController.deleteStudent);
 
 export default router;

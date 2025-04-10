@@ -45,7 +45,6 @@ export class StudentController {
     try {
       const id = parseInt(req.params.id);
       const studentData: Partial<Student> = req.body;
-
       const updatedStudent = await StudentModel.update(id, studentData);
 
       if (!updatedStudent) {

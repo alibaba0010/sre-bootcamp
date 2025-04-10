@@ -59,10 +59,10 @@ export class StudentModel {
     student: Partial<Student>
   ): Promise<Student | null> {
     try {
-      const { name, email, age } = student;
+      const { name, age } = student;
       const result = await pool.query(
-        "UPDATE students SET name = $1, email = $2, age = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *",
-        [name, email, age, id]
+        "UPDATE students SET name = $1, age = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *",
+        [name, age, id]
       );
       if (result.rows.length === 0) {
         logger.warn(`Student with id ${id} not found for update`);
