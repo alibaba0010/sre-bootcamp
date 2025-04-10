@@ -25,7 +25,7 @@ A simple REST API for managing student records built with Node.js, Express, and 
 
 ```bash
 git clone https://github.com/alibaba0010/sre-bootcamp.git
-cd student-crud-api
+cd sre-bootcamp
 ```
 
 2. Install dependencies:
