@@ -19,6 +19,37 @@ A simple REST API for managing student records built with Node.js, Express, and 
 - PostgreSQL
 - npm or yarn
 
+## Project Structure
+
+```
+src/
+├── config/
+│   └── database.ts     # Database configuration
+├── controllers/
+│   └── student.ts      # Student controller logic
+├── middleware/
+│   ├── error.ts        # Error handling middleware
+│   └── logger.ts       # Logging middleware
+├── models/
+│   └── student.ts      # Student model definition
+├── routes/
+│   ├── health.ts       # Health check routes
+│   └── student.ts      # Student routes
+├── services/
+│   └── student.ts      # Student business logic
+├── utils/
+│   └── logger.ts       # Logger configuration
+├── app.ts              # Express app setup
+└── server.ts           # Server entry point
+test/
+├── integration/        # Integration tests
+└── unit/              # Unit tests
+migrations/            # Database migrations
+.env                   # Environment variables
+package.json          # Project dependencies
+tsconfig.json         # TypeScript configuration
+```
+
 ## Setup
 
 1. Clone the repository:

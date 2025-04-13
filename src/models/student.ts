@@ -54,6 +54,17 @@ export class StudentModel {
     }
   }
 
+  static async findByEmail(email: string): Promise<Student | null> {
+    try {
+      const query = "SELECT * FROM students WHERE email = $1";
+      const result = await pool.query(query, [email]);
+      return result.rows[0] || null;
+    } catch (error) {
+      logger.error("Error in findByEmail:", error);
+      throw error;
+    }
+  }
+
   static async update(
     id: number,
     student: Partial<Student>

@@ -48,6 +48,35 @@ describe("Student API", () => {
       expect(response.body.email).toBe(student.email);
       expect(response.body.age).toBe(student.age);
     });
+
+    it("should not allow duplicate email addresses", async () => {
+      const student = {
+        name: "John Doe",
+        email: "duplicate@example.com",
+        age: 25,
+      };
+
+      // Create first student
+      const firstResponse = await request(app)
+        .post("/api/v1/students")
+        .send(student);
+      expect(firstResponse.status).toBe(201);
+
+      // Try to create second student with same email
+      const secondStudent = {
+        name: "Jane Doe",
+        email: "duplicate@example.com", // Same email
+        age: 23,
+      };
+
+      const secondResponse = await request(app)
+        .post("/api/v1/students")
+        .send(secondStudent);
+
+      expect(secondResponse.status).toBe(409);
+      expect(secondResponse.body).toHaveProperty("error");
+      expect(secondResponse.body.error).toBe("Email already exists");
+    });
   });
 
   describe("GET /api/v1/students", () => {

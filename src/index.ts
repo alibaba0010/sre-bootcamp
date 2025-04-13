@@ -10,15 +10,12 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// API versioning
 app.use("/api/v1", studentRoutes);
 
-// Error handling middleware
 app.use(
   (
     err: Error,
