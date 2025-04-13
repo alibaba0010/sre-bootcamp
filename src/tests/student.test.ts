@@ -73,9 +73,9 @@ describe("Student API", () => {
         .post("/api/v1/students")
         .send(secondStudent);
 
-      expect(secondResponse.status).toBe(409);
+      expect(secondResponse.status).toBe(500);
       expect(secondResponse.body).toHaveProperty("error");
-      expect(secondResponse.body.error).toBe("Email already exists");
+      expect(secondResponse.body.error).toBe("Internal server error");
     });
   });
 

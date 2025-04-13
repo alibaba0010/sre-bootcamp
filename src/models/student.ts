@@ -14,6 +14,17 @@ export class StudentModel {
   static async create(student: Student): Promise<Student> {
     try {
       const { name, email, age } = student;
+
+      // Check if email already exists
+      const emailCheck = await pool.query(
+        "SELECT * FROM students WHERE email = $1",
+        [email]
+      );
+      if (emailCheck.rows.length > 0) {
+        logger.warn(`Email ${email} already exists`);
+        throw new Error("Email already exists");
+      }
+
       const result = await pool.query(
         "INSERT INTO students (name, email, age) VALUES ($1, $2, $3) RETURNING *",
         [name, email, age]
