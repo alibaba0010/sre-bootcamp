@@ -17,13 +17,21 @@ const limiter = rateLimit({
   max: 2, // 2 requests per minute
   message: "Too many requests from this IP, please try again after a minute",
   handler: (req, res) => {
+    console.log(req);
     logger.warn(`Rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
       error: "Too many requests, please try again later.",
     });
   },
 });
-
+// Add logging middleware
+app.use((req, res, next) => {
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const ipv4 = ip.split(",")[0].trim();
+  console.log("Incoming request:", ipv4);
+  logger.info(`Incoming ${req.method} request to ${req.url}`, { ip });
+  next();
+});
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
