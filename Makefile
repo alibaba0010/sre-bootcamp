@@ -15,12 +15,15 @@ start-db:
 	@echo "Starting database..."
 	docker compose up -d db
 	@echo "Waiting for database to be ready..."
-	@until docker compose exec db pg_isready -U alibaba; do sleep 2; done
+	@until docker compose exec db pg_isready -U alibaba -d sre_bootcamp; do sleep 2; done
 
 # Run database migrations
 run-migrations: start-db
 	@echo "Running migrations..."
-	npm run migrate
+	# npm run migrate
+	# node dist/db/migrations.js
+	docker compose exec api node dist/db/migrations.js
+	@echo "Migrations completed"
 
 # Build API image
 docker-build:
@@ -30,6 +33,9 @@ docker-build:
 start-api: start-db run-migrations
 	@echo "Starting API..."
 	docker compose up -d api
+	@echo "Waiting for migrations to complete..."
+	@sleep 5
+	make run-migrations
 
 # Stop all services
 stop:
@@ -38,14 +44,16 @@ stop:
 # Clean everything
 clean:
 	docker compose down -v
+	
 	rm -rf node_modules dist
 
 # Development setup
 setup-dev: check-dependencies
 	@echo "Setting up development environment..."
-	npm install
-	docker compose up --build
+	# npm install
+	docker compose build
 	make start-api
+	 
 
 # Show logs
 logs:
@@ -68,7 +76,7 @@ test:
 	npm test
 
 migrate:
-	npm run migrate
+	node dist/db/migrations.js
 
 docker-run:
 	docker run -p 3004:3004 --env-file .env sre-bootcamp\:$(VERSION)
