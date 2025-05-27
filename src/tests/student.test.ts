@@ -33,9 +33,20 @@ describe("Student API", () => {
   });
 
   afterAll(async () => {
-    // Clean up test data
-    await pool.query("DROP TABLE IF EXISTS students");
-    await pool.end();
+    try {
+      // Clean up test data
+      await pool.query("DROP TABLE IF EXISTS students");
+      // Close all connections in the pool
+      await pool.end();
+      // Close the Express server
+      const server = app.listen();
+      if (server) {
+        await new Promise((resolve) => server.close(resolve));
+      }
+    } catch (error) {
+      console.error("Cleanup failed:", error);
+      throw error;
+    }
   });
 
   describe("POST /api/v1/students", () => {

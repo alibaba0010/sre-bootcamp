@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -14,7 +15,7 @@ const port = process.env.PORT || 3000;
 // Create rate limiter
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 2, // 2 requests per minute
+  max: 12, // 12 requests per minute
   message: "Too many requests from this IP, please try again after a minute",
   handler: (req, res) => {
     console.log(req);

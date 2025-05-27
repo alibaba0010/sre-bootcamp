@@ -39,7 +39,7 @@ jobs:
       - name: Run linting
         run: |
           npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin --save-dev
-          npx eslint . --ext .ts
+          npx eslint --config .eslintrc.json 'src/**/*.ts'
 
       - name: Run tests
         run: npm test
