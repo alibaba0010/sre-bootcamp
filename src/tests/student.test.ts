@@ -8,9 +8,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 let server: any;
 let pool: Pool;
-console.log("Env variable ", process.env.DATABASE_URL);
-console.log("Env local variable check", process.env.LOCAL_DATABASE_URL);
-console.log("Is production:", isProduction);
+
 // Initialize the pool outside of tests
 beforeAll(async () => {
   pool = new Pool({

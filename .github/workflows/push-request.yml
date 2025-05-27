@@ -12,11 +12,26 @@ on:
 env:
   DOCKER_IMAGE: alibaba0010/sre-bootcamp
   DOCKER_TAG: ${{ github.sha }}
-  DATABASE_URL: ${{ secrets.LOCAL_DATABASE_URL }}
+  DATABASE_URL: postgres://postgres:password@localhost:5432/testdb
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -38,9 +53,8 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          LOCAL_DATABASE_URL: ${{ secrets.LOCAL_DATABASE_URL }}
-          NODE_ENV: ${{ secrets.NODE_ENV }}
+          DATABASE_URL: postgres://postgres:password@localhost:5432/testdb
+          NODE_ENV: production
         run: npm test
 
       - name: Set up Docker Buildx
