@@ -6,49 +6,63 @@ import dotenv from "dotenv";
 dotenv.config();
 const isProduction = process.env.NODE_ENV === "production";
 
-const pool = new Pool({
-  connectionString: isProduction
-    ? process.env.DATABASE_URL
-    : process.env.LOCAL_DATABASE_URL,
-  max: parseInt(process.env.DB_POOL_MAX || "20"),
-  idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || "30000"),
-  connectionTimeoutMillis: parseInt(
-    process.env.DB_CONNECTION_TIMEOUT || "2000"
-  ),
-  ssl: isProduction ? { rejectUnauthorized: false } : false,
+let server: any;
+let pool: Pool;
+
+// Initialize the pool outside of tests
+beforeAll(async () => {
+  pool = new Pool({
+    connectionString: isProduction
+      ? process.env.DATABASE_URL
+      : process.env.LOCAL_DATABASE_URL,
+    max: parseInt(process.env.DB_POOL_MAX || "20"),
+    idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || "30000"),
+    connectionTimeoutMillis: parseInt(
+      process.env.DB_CONNECTION_TIMEOUT || "2000"
+    ),
+    ssl: isProduction ? { rejectUnauthorized: false } : false,
+  });
+
+  // Start the server
+  server = app.listen(0); // Use port 0 for random available port
+
+  // Create test table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS students (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(100) UNIQUE NOT NULL,
+      age INTEGER NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 });
+
+afterAll(async () => {
+  try {
+    // Clean up test data
+    await pool.query("DROP TABLE IF EXISTS students");
+
+    // Close the pool properly
+    await pool.end();
+
+    // Close the server properly
+    await new Promise<void>((resolve) => {
+      server.close(() => resolve());
+    });
+  } catch (error) {
+    console.error("Cleanup failed:", error);
+    throw error;
+  }
+});
+
+// Clear the table between tests
+afterEach(async () => {
+  await pool.query("DELETE FROM students");
+});
+
 describe("Student API", () => {
-  beforeAll(async () => {
-    // Create test table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS students (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        age INTEGER NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-  });
-
-  afterAll(async () => {
-    try {
-      // Clean up test data
-      await pool.query("DROP TABLE IF EXISTS students");
-      // Close all connections in the pool
-      await pool.end();
-      // Close the Express server
-      const server = app.listen();
-      if (server) {
-        await new Promise((resolve) => server.close(resolve));
-      }
-    } catch (error) {
-      console.error("Cleanup failed:", error);
-      throw error;
-    }
-  });
-
   describe("POST /api/v1/students", () => {
     it("should create a new student", async () => {
       const student = {
