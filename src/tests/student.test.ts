@@ -8,7 +8,9 @@ const isProduction = process.env.NODE_ENV === "production";
 
 let server: any;
 let pool: Pool;
-
+console.log(
+  `Running tests in ${isProduction ? "production" : "development"} mode`
+);
 // Initialize the pool outside of tests
 beforeAll(async () => {
   pool = new Pool({
