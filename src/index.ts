@@ -37,7 +37,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Apply rate limiting to all routes
+// Apply rate limiting to all routes for later use
 app.use(limiter);
 
 app.use("/api/v1", studentRoutes);
