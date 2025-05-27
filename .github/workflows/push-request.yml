@@ -40,6 +40,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           LOCAL_DATABASE_URL: ${{ secrets.LOCAL_DATABASE_URL }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
         run: npm test
 
       - name: Set up Docker Buildx
